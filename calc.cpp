@@ -1,5 +1,5 @@
 #include <iostream>
-#include <fstream>
+// #include <fstream>
 
 #include "rules/qingque.hpp"
 #include "result_map.h"
@@ -56,15 +56,23 @@ bool calculate(const std::string& s0 = "") {
         std::cout << "- 此牌不能和牌.\n" << std::endl;
         return true;
     }
-    auto res = qingque::get_weight(wd, h);
-    double fan = std::log2((double)wd.total_weight) - std::log2((double)res.first);
+    // auto res = qingque::get_weight(wd, h);
+    // double fan = std::log2((double)wd.total_weight) - std::log2((double)res.first);
+    // auto res2 = qingque::derepellenise(res.second);
+    // // auto res2 = res.second;
+    // using enum qingque::indices;
+    // fan += 18.0 * (res2[heavenly_hand] + res2[earthly_hand]) + 3.0 * (res2[out_with_replacement_tile] + res2[last_tile_draw] + res2[last_tile_claim] + res2[robbing_the_kong]);
+    auto res = qingque::get_fan(wd, h);
     auto res2 = qingque::derepellenise(res.second);
-    // auto res2 = res.second;
-    using enum qingque::indices;
-    fan += 18.0 * (res2[heavenly_hand] + res2[earthly_hand]) + 3.0 * (res2[out_with_replacement_tile] + res2[last_tile_draw] + res2[last_tile_claim] + res2[robbing_the_kong]);
+    double fan = res.first;
+    int fan_count = 0;
     for (int i = 0; i < qingque::code_size; ++i)
-        if (res2[i]) std::cout << qingque::fans[i].name << ", ";
-    std::cout << "\b\b; " << std::endl;
+        if (res2[i]) {
+            std::cout << qingque::fans[i].name << ", ";
+            ++fan_count;
+        }
+    if (fan_count) std::cout << "\b\b; " << std::endl;
+    else std::cout << "平和; " << std::endl;
     std::printf("共 %.2f 番 (%d 点).\n\n", fan, (int)std::round(fan * fan));
     return true;
 }
@@ -74,7 +82,7 @@ int main() {
     setlocale(LC_ALL, "zh_CN.UTF-8");
 #endif
     wd = qingque_wd::get_wd();
-    std::cout << "[青雀 第 3 版 计算器]\n\n";
+    std::cout << "[青雀 第 4 版 计算器]\n\n";
     std::cout << "牌张：123456789m/p/s, ESWNCFP\n";
     std::cout << "门风:  ! - 東,    @ - 南,    # - 西,    $ - 北\n";
     std::cout << "和牌:  % - 自摸,  ^ - 岭上开花/抢杠,  & - 海底捞月/河底捞鱼,  * - 天和/地和\n";

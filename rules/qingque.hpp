@@ -83,6 +83,12 @@ namespace qingque {
         bool special_compatible = false;
         bool is_special = false;
         bool is_occasional = false;
+        uint8_t weight_20 = 20u; // 20 * fan_weight
+        uint8_t fan_value = 0u;
+
+        tag(bool special_compatible = false, bool is_special = false, bool is_occasional = false, uint8_t weight_20 = 20u, uint8_t fan_value = 0u) :
+            special_compatible(special_compatible), is_special(is_special), is_occasional(is_occasional), weight_20(weight_20), fan_value(fan_value) {}
+        tag(unsigned int weight_20) : special_compatible(false), is_special(false), is_occasional(false), weight_20(weight_20), fan_value(0u) {}
     };
 
     using fan = scoring_element<uint8_t, tag>;
@@ -849,72 +855,72 @@ namespace qingque {
     }
 
     const std::vector<fan> fans = {
-        fan("天和", {1, 0, 1}, criteria::heavenly_hand),
-        fan("地和", {1, 0, 1}, criteria::earthly_hand),
-        fan("岭上开花", {0, 0, 1}, criteria::out_with_replacement_tile),
-        fan("海底捞月", {1, 0, 1}, criteria::last_tile_draw),
-        fan("河底捞鱼", {1, 0, 1}, criteria::last_tile_claim),
-        fan("抢杠和", {1, 0, 1}, criteria::robbing_the_kong),
-        fan("门前清", {}, criteria::concealed_hand),
-        fan("四暗杠", {}, criteria::four_concealed_kongs),
-        fan("三暗杠", {}, criteria::three_concealed_kongs),
-        fan("双暗杠", {}, criteria::two_concealed_kongs),
-        fan("暗杠", {}, criteria::concealed_kong),
-        fan("四杠", {}, criteria::four_kongs),
-        fan("三杠", {}, criteria::three_kongs),
-        fan("双杠", {}, criteria::two_kongs),
+        fan("天和", {1, 0, 1, 20, 18}, criteria::heavenly_hand),
+        fan("地和", {1, 0, 1, 20, 18}, criteria::earthly_hand),
+        fan("岭上开花", {0, 0, 1, 20, 3}, criteria::out_with_replacement_tile),
+        fan("海底捞月", {1, 0, 1, 20, 3}, criteria::last_tile_draw),
+        fan("河底捞鱼", {1, 0, 1, 20, 3}, criteria::last_tile_claim),
+        fan("抢杠和", {1, 0, 1, 20, 3}, criteria::robbing_the_kong),
+        fan("门前清", {18u}, criteria::concealed_hand),
+        fan("四暗杠", {23u}, criteria::four_concealed_kongs),
+        fan("三暗杠", {20u}, criteria::three_concealed_kongs),
+        fan("双暗杠", {16u}, criteria::two_concealed_kongs),
+        fan("暗杠", {14u}, criteria::concealed_kong),
+        fan("四杠", {22u}, criteria::four_kongs),
+        fan("三杠", {20u}, criteria::three_kongs),
+        fan("双杠", {15u}, criteria::two_kongs),
         // fan("杠", {}, criteria::kong),
-        fan("四暗刻", {}, criteria::four_concealed_triplets),
-        fan("三暗刻", {}, criteria::three_concealed_triplets),
+        fan("四暗刻", {21u}, criteria::four_concealed_triplets),
+        fan("三暗刻", {20u}, criteria::three_concealed_triplets),
         // fan("双暗刻", {}, criteria::two_concealed_triplets),
         // fan("暗刻", {}, criteria::disabled), // disabled
-        fan("对对和", {}, criteria::all_triplets),
-        fan("字一色", {}, criteria::all_honours),
-        fan("大四喜", {}, criteria::big_four_winds),
-        fan("小四喜", {}, criteria::little_four_winds),
-        fan("大三元", {}, criteria::big_three_dragons),
-        fan("小三元", {}, criteria::little_three_dragons),
-        fan("番牌刻", {}, criteria::fan_tile_1t),
-        fan("番牌二刻", {}, criteria::fan_tile_2t),
-        fan("番牌三刻", {}, criteria::fan_tile_3t),
-        fan("番牌四刻", {}, criteria::fan_tile_4t),
-        fan("番牌对", {}, criteria::fan_tile_1p),
-        fan("清幺九", {}, criteria::all_terminals),
-        fan("混幺九", {}, criteria::all_terminals_and_honours),
-        fan("清带幺", {}, criteria::pure_outside_hand),
-        fan("混带幺", {}, criteria::mixed_outside_hand),
-        fan("九莲宝灯", {}, criteria::nine_gates),
-        fan("清一色", {}, criteria::full_flush),
-        fan("混一色", {}, criteria::half_flush),
-        fan("五门齐", {}, criteria::all_types),
-        fan("二数", {}, criteria::two_numbers),
-        fan("三聚", {}, criteria::three_consecutive_numbers),
-        fan("四聚", {}, criteria::four_consecutive_numbers),
-        fan("九数贯通", {}, criteria::nine_numbers),
-        fan("满庭芳", {}, criteria::common_number),
-        fan("镜数", {}, criteria::reflected_hand),
-        fan("四同顺", {}, criteria::quadruple_sequence),
-        fan("三同顺", {}, criteria::triple_sequence),
-        fan("二般高", {}, criteria::two_double_sequences),
-        fan("一般高", {}, criteria::double_sequence),
-        fan("三色同刻", {}, criteria::mixed_triple_triplet),
+        fan("对对和", {19u}, criteria::all_triplets),
+        fan("字一色", {22u}, criteria::all_honours),
+        fan("大四喜", {22u}, criteria::big_four_winds),
+        fan("小四喜", {21u}, criteria::little_four_winds),
+        fan("大三元", {21u}, criteria::big_three_dragons),
+        fan("小三元", {21u}, criteria::little_three_dragons),
+        fan("番牌刻", {15u}, criteria::fan_tile_1t),
+        fan("番牌二刻", {16u}, criteria::fan_tile_2t),
+        fan("番牌三刻", {18u}, criteria::fan_tile_3t),
+        fan("番牌四刻", {21u}, criteria::fan_tile_4t),
+        fan("番牌对", {14u}, criteria::fan_tile_1p),
+        fan("清幺九", {22u}, criteria::all_terminals),
+        fan("混幺九", {20u}, criteria::all_terminals_and_honours),
+        fan("清带幺", {20u}, criteria::pure_outside_hand),
+        fan("混带幺", {20u}, criteria::mixed_outside_hand),
+        fan("九莲宝灯", {23u}, criteria::nine_gates),
+        fan("清一色", {21u}, criteria::full_flush),
+        fan("混一色", {20u}, criteria::half_flush),
+        fan("五门齐", {20u}, criteria::all_types),
+        fan("二数", {20u}, criteria::two_numbers),
+        fan("三聚", {20u}, criteria::three_consecutive_numbers),
+        fan("四聚", {20u}, criteria::four_consecutive_numbers),
+        fan("九数贯通", {20u}, criteria::nine_numbers),
+        fan("满庭芳", {20u}, criteria::common_number),
+        fan("镜数", {20u}, criteria::reflected_hand),
+        fan("四同顺", {23u}, criteria::quadruple_sequence),
+        fan("三同顺", {21u}, criteria::triple_sequence),
+        fan("二般高", {20u}, criteria::two_double_sequences),
+        fan("一般高", {18u}, criteria::double_sequence),
+        fan("三色同刻", {20u}, criteria::mixed_triple_triplet),
         fan("二同刻", {}, criteria::disabled), // disabled
         fan("双同刻", {}, criteria::disabled), // disabled
-        fan("三色同顺", {}, criteria::mixed_triple_sequence),
+        fan("三色同顺", {20u}, criteria::mixed_triple_sequence),
         fan("二相逢", {}, criteria::disabled), // disabled
         fan("喜相逢", {}, criteria::disabled), // disabled
-        fan("镜同", {}, criteria::mirrored_hand),
-        fan("四连刻", {}, criteria::four_shifted_triplets),
-        fan("三连刻", {}, criteria::three_shifted_triplets),
-        fan("四步高", {}, criteria::four_shifted_sequences),
-        fan("三步高", {}, criteria::three_shifted_sequences),
-        fan("四连环", {}, criteria::four_chained_sequences),
-        fan("三连环", {}, criteria::three_chained_sequences),
-        fan("一气贯通", {}, criteria::pure_straight),
-        fan("双龙会", {}, criteria::two_short_straights),
+        fan("镜同", {20u}, criteria::mirrored_hand),
+        fan("四连刻", {21u}, criteria::four_shifted_triplets),
+        fan("三连刻", {20u}, criteria::three_shifted_triplets),
+        fan("四步高", {21u}, criteria::four_shifted_sequences),
+        fan("三步高", {20u}, criteria::three_shifted_sequences),
+        fan("四连环", {21u}, criteria::four_chained_sequences),
+        fan("三连环", {19u}, criteria::three_chained_sequences),
+        fan("一气贯通", {21u}, criteria::pure_straight),
+        fan("双龙会", {20u}, criteria::two_short_straights),
         fan("连六", {}, criteria::disabled), // disabled
-        fan("三色连刻", {}, criteria::mixed_shifted_triplets),
-        fan("三色贯通", {}, criteria::mixed_straight)
+        fan("三色连刻", {17u}, criteria::mixed_shifted_triplets),
+        fan("三色贯通", {19u}, criteria::mixed_straight)
     };
 
     enum indices {
@@ -1024,6 +1030,13 @@ namespace qingque {
         }
     }
 
+    uint64_t get_weight(const w_data& data, const std::bitset<code_size>& res) {
+        uint64_t weight = 0.0;
+        for (const auto& [key, w] : data.weights)
+            if ((res & key) == res) weight += w;
+        return weight;
+    }
+
     std::pair<uint64_t, std::bitset<code_size>> get_weight(const w_data& data, const hand& h) {
         auto v0 = evaluate_fans(h, false);
         auto v = v0;
@@ -1033,9 +1046,7 @@ namespace qingque {
         uint64_t min_weight = data.total_weight;
         std::bitset<code_size> min_res;
         for (const auto& res : v) {
-            uint64_t weight = 0.0;
-            for (const auto& [key, w] : data.weights)
-                if ((res & key) == res) weight += w;
+            uint64_t weight = get_weight(data, res);
             if (weight < min_weight) { 
                 min_weight = weight;
                 min_res = res;
@@ -1046,11 +1057,42 @@ namespace qingque {
         return {min_weight, min_res};
     }
 
-    uint64_t get_weight(const w_data& data, const std::bitset<code_size>& res) {
-        uint64_t weight = 0.0;
-        for (const auto& [key, w] : data.weights)
-            if ((res & key) == res) weight += w;
-        return weight;
+    double get_fan(const w_data& data, const std::bitset<code_size>& res) {
+        double fan = 0.0;
+        auto res1 = res;
+        for (int i = 0; i <= indices::robbing_the_kong; ++i) {
+            fan += res1[i] ? fans[i].tag.fan_value : 0.0;
+            res1[i] = false;
+        }
+        for (auto a = 14; a <= 23; ++a) {
+            for (int i = 0; i <= indices::mixed_straight; ++i)
+                if (fans[i].tag.weight_20 == a - 1) res1[i] = 0;
+            double fan0 = std::log2(data.total_weight) - std::log2(get_weight(data, res1));
+            fan += fan0 * (a == 14 ? 0.7 : 0.05);
+        }
+        return fan;
+    }
+
+    std::pair<double, std::bitset<code_size>> get_fan(const w_data& data, const hand& h) {
+        auto v0 = evaluate_fans(h, false);
+        auto v = v0;
+        for (int i = 0; i <= indices::robbing_the_kong; ++i)
+            for (int j = 0; j < v0.size(); ++j)
+                v[j][i] = false;
+        double max_fan = 0.0;
+        std::bitset<code_size> max_res;
+        for (const auto& res : v) {
+            double fan = get_fan(data, res);
+            if (fan > max_fan) { 
+                max_fan = fan;
+                max_res = res;
+            }
+        }
+        for (int i = 0; i <= indices::robbing_the_kong; ++i) {
+            max_res[i] = v0[0][i];
+            max_fan += v0[0][i] ? fans[i].tag.fan_value : 0.0;
+        }
+        return {max_fan, max_res};
     }
 
     std::bitset<code_size> derepellenise(const std::bitset<code_size>& res) {
@@ -1088,8 +1130,8 @@ namespace qingque {
         new_res[triple_sequence] = new_res[triple_sequence] && !res[quadruple_sequence];
         new_res[two_double_sequences] = new_res[two_double_sequences] && !res[quadruple_sequence] && !res[triple_sequence];
         new_res[double_sequence] = new_res[double_sequence] && (!res[triple_sequence] && !res[two_double_sequences]);
-        new_res[mixed_double_triplet] = new_res[mixed_double_triplet] && (!res[two_numbers] && !res[mixed_triple_triplet] && !res[two_mixed_double_triplets]);
-        new_res[two_mixed_double_triplets] = new_res[two_mixed_double_triplets] && !res[mixed_triple_triplet] && !res[two_numbers];
+        // new_res[mixed_double_triplet] = new_res[mixed_double_triplet] && (!res[two_numbers] && !res[mixed_triple_triplet] && !res[two_mixed_double_triplets]);
+        // new_res[two_mixed_double_triplets] = new_res[two_mixed_double_triplets] && !res[mixed_triple_triplet] && !res[two_numbers];
         // new_res[mixed_double_sequence] = new_res[mixed_double_sequence] && (!res[mixed_triple_sequence] && !res[two_mixed_double_sequences]);
         // new_res[two_mixed_double_sequences] = new_res[two_mixed_double_sequences] && !res[double_sequence];
         new_res[three_shifted_triplets] = new_res[three_shifted_triplets] && !res[four_shifted_triplets];
@@ -1097,6 +1139,10 @@ namespace qingque {
         new_res[three_chained_sequences] = new_res[three_chained_sequences] && !res[four_chained_sequences];
         new_res[short_straight] = new_res[short_straight] && (!res[two_short_straights] && !res[pure_straight] && !res[four_shifted_sequences]);
         // new_res[two_short_straights] = new_res[two_short_straights] && !res[pure_straight];
+        new_res[mixed_double_triplet] = 0;
+        new_res[mixed_double_sequence] = 0;
+        new_res[two_mixed_double_triplets] = 0;
+        new_res[two_mixed_double_sequences] = 0;
         return new_res;
     }
 
