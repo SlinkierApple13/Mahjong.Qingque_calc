@@ -96,7 +96,7 @@ namespace mahjong {
         template<typename T> requires std::is_constructible_v<tile, T>
         constexpr bool contains_pair_of(const hand& d, std::initializer_list<T> ti) {
             for (auto ti2 : ti)
-                if (d.counter().count(ti2) != 2 && d.counter.count(ti2) != 4) return false;
+                if (d.counter().count(ti2) != 2 && d.counter().count(ti2) != 4) return false;
             return true;
         }
 

@@ -217,16 +217,6 @@ void hand_gen(my_queue<std::array<uint32_t, 4>>& source, my_queue<my_task>& q, s
             uint64_t weight_mult = 3;
             if (tile(ti).suit() == suit_type::z)
                 weight_mult = 1;
-            // bool reduced_sequences = false;
-            // if (tile(ti).suit() == suit_type::z || i[0] < 7)
-            //     reduced_sequences = true;
-            // if (reduced_sequences) {
-            //     for (int k = 1; k <= 3; ++k)
-            //         if (meld_sets[k][0].type() == meld_type::sequence) {
-            //             weight_mult *= 2.0; // 1 + melded_sequence_mult
-            //             meld_sets[k] = {meld_sets[k][0]};
-            //         }
-            // }
             for (auto m0 : meld_sets[0])
             for (auto m1 : meld_sets[1])
             for (auto m2 : meld_sets[2])

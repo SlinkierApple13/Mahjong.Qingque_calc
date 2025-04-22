@@ -904,7 +904,7 @@ namespace qingque {
         fan("河底捞鱼", {1, 0, 1, 20, 3}, criteria::last_tile_claim),
         fan("抢杠和", {1, 0, 1, 20, 3}, criteria::robbing_the_kong),
         fan("七对", {1, 1, 0, 20, 0}, criteria::seven_pairs),
-        fan("门前清", {18u}, criteria::concealed_hand),
+        fan("门前清", {20u}, criteria::concealed_hand),
         fan("四暗杠", {23u}, criteria::four_concealed_kongs),
         fan("三暗杠", {20u}, criteria::three_concealed_kongs),
         fan("双暗杠", {16u}, criteria::two_concealed_kongs),
@@ -915,7 +915,7 @@ namespace qingque {
         fan("四暗刻", {21u}, criteria::four_concealed_triplets),
         fan("三暗刻", {20u}, criteria::three_concealed_triplets),
         fan("对对和", {19u}, criteria::all_triplets),
-        fan("十二归", {1, 0, 0, 20, 0}, criteria::twelve_hog),
+        fan("十二归", {1, 0, 0, 21, 0}, criteria::twelve_hog),
         fan("八归", {1, 0, 0, 16, 0}, criteria::eight_hog),
         fan("字一色", {1, 0, 0, 22, 0}, criteria::all_honours),
         fan("大四喜", {22u}, criteria::big_four_winds),
@@ -956,7 +956,7 @@ namespace qingque {
         fan("一般高", {18u}, criteria::double_sequence),
         fan("三色同刻", {20u}, criteria::mixed_triple_triplet),
         fan("三色同顺", {20u}, criteria::mixed_triple_sequence),
-        fan("三色二对", {20u}, criteria::two_triple_pairs),
+        fan("三色二对", {1, 1, 0, 20, 0}, criteria::two_triple_pairs),
         fan("镜同", {1, 0, 0, 20, 0}, criteria::mirrored_hand),
         fan("四连刻", {21u}, criteria::four_shifted_triplets),
         fan("三连刻", {20u}, criteria::three_shifted_triplets),
@@ -1061,7 +1061,7 @@ namespace qingque {
         if (is_seven_pairs(h)) {
             std::bitset<code_size> res;
             for (int j = 0; j < fan_results.size(); ++j)
-                if (fans[j].tag.is_special && (!ignore_occ || !fans[j].tag.is_occasional)) 
+                if (fans[j].tag.special_compatible && (!ignore_occ || !fans[j].tag.is_occasional)) 
                     res[j] = fan_results[j][0];
             results.push_back(res);
         }
@@ -1151,7 +1151,7 @@ namespace qingque {
         std::bitset<code_size> new_res = res;
         using enum indices;
         new_res[concealed_hand] = new_res[concealed_hand] && (!res[heavenly_hand] && !res[earthly_hand] && !res[four_concealed_triplets] && !res[nine_gates]);
-        new_res[all_triplets] = new_res[all_triplets] && (!res[four_kongs] && !res[four_concealed_triplets] && !res[big_four_winds] && !res[two_numbers] && !res[all_honours] && !res[four_shifted_triplets] && !res[all_terminals_and_honours]);
+        new_res[all_triplets] = new_res[all_triplets] && (!res[four_kongs] && !res[four_concealed_triplets] && !res[big_four_winds] && !res[four_shifted_triplets]);
         // new_res[concealed_triplet] = new_res[concealed_triplet] && (!res[four_concealed_triplets] && !res[three_concealed_triplets] && !res[two_concealed_triplets]);
         // new_res[two_concealed_triplets] = new_res[two_concealed_triplets] && (!res[four_concealed_triplets] && !res[three_concealed_triplets]);
         new_res[three_concealed_triplets] = new_res[three_concealed_triplets] && !res[four_concealed_triplets] && !res[three_concealed_kongs];
@@ -1176,7 +1176,7 @@ namespace qingque {
         new_res[mixed_outside_hand] = new_res[mixed_outside_hand] && (!res[pure_outside_hand] && !res[all_terminals_and_honours]);
         new_res[all_terminals_and_honours] = new_res[all_terminals_and_honours] && (!res[all_terminals] && !res[all_honours]);
         new_res[full_flush] = new_res[full_flush] && !res[nine_gates];
-        new_res[half_flush] = new_res[half_flush] && !res[full_flush] && !res[all_honours] && !res[big_four_winds] && !res[little_four_winds];
+        new_res[half_flush] = new_res[half_flush] && !res[full_flush] && !res[all_honours] && !res[big_four_winds] && !res[little_four_winds] && !res[six_dragon_pairs];
         new_res[two_numbers] = new_res[two_numbers] && !res[all_terminals];
         new_res[four_consecutive_numbers] = new_res[four_consecutive_numbers] && !res[three_consecutive_numbers];
         new_res[triple_sequence] = new_res[triple_sequence] && !res[quadruple_sequence];
@@ -1204,6 +1204,11 @@ namespace qingque {
         new_res[fan_tile_1p] = new_res[fan_tile_1p] && !res[four_wind_pairs];
         new_res[fan_tile_3p] = new_res[fan_tile_3p] && !res[three_dragon_pairs];
         new_res[fan_tile_6p] = new_res[fan_tile_6p] && !res[six_dragon_pairs];
+        new_res[eight_hog] = new_res[eight_hog] && !res[twelve_hog];
+        new_res[twelve_hog] = new_res[twelve_hog] && !res[six_dragon_pairs];
+        new_res[twelve_hog] = new_res[twelve_hog] && !res[fan_tile_7p];
+        new_res[twelve_hog] = new_res[twelve_hog] && !res[quadruple_sequence];
+        new_res[three_dragon_pairs] = new_res[three_dragon_pairs] && !res[six_dragon_pairs];
         return new_res;
     }
 
