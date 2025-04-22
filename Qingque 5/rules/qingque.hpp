@@ -96,7 +96,7 @@ namespace qingque {
     const verifier is_seven_pairs([](const hand& h) {
         if (h.melds().size()) return false;
         for (tile_t ti : tile_set::all_tiles)
-            if (h.counter().count(ti) != 0 && h.counter().count(ti) != 2) return false;
+            if (h.counter().count(ti) & 1) return false;
         return true;
     });
 
@@ -131,7 +131,7 @@ namespace qingque {
     const verifier is_winning_hand([](const hand& h) {
         if (!input_verifier(h)) return false;
         if (h.decompose().size()) return true;
-        // if (is_seven_pairs(h) || is_thirteen_orphans(h) || is_honours_and_knitted_tiles(h)) return true;
+        if (is_seven_pairs(h)) return true;
         return false;
     });
 
@@ -311,26 +311,32 @@ namespace qingque {
 
         constexpr res_t fan_tile_2p(const hand& h) {
             const std::array<tile_t, 4> fan_tiles = {h.winning_type().seat_wind(), honours::C, honours::F, honours::P};
-            uint8_t cnt = 0;
-            for (tile_t ti : fan_tiles)
-                cnt += (h.counter().count(ti) == 2);
-            return cnt >= 2;
+            return utils::count_pair_of(h, fan_tiles) >= 2;
         }
 
         constexpr res_t fan_tile_3p(const hand& h) {
             const std::array<tile_t, 4> fan_tiles = {h.winning_type().seat_wind(), honours::C, honours::F, honours::P};
-            uint8_t cnt = 0;
-            for (tile_t ti : fan_tiles)
-                cnt += (h.counter().count(ti) == 2);
-            return cnt >= 3;
+            return utils::count_pair_of(h, fan_tiles) >= 3;
         }
 
         constexpr res_t fan_tile_4p(const hand& h) {
             const std::array<tile_t, 4> fan_tiles = {h.winning_type().seat_wind(), honours::C, honours::F, honours::P};
-            uint8_t cnt = 0;
-            for (tile_t ti : fan_tiles)
-                cnt += (h.counter().count(ti) == 2);
-            return cnt >= 4;
+            return utils::count_pair_of(h, fan_tiles) >= 4;
+        }
+
+        constexpr res_t fan_tile_5p(const hand& h) {
+            const std::array<tile_t, 4> fan_tiles = {h.winning_type().seat_wind(), honours::C, honours::F, honours::P};
+            return utils::count_pair_of(h, fan_tiles) >= 5;
+        }
+
+        constexpr res_t fan_tile_6p(const hand& h) {
+            const std::array<tile_t, 4> fan_tiles = {h.winning_type().seat_wind(), honours::C, honours::F, honours::P};
+            return utils::count_pair_of(h, fan_tiles) >= 6;
+        }
+
+        constexpr res_t fan_tile_7p(const hand& h) {
+            const std::array<tile_t, 4> fan_tiles = {h.winning_type().seat_wind(), honours::C, honours::F, honours::P};
+            return utils::count_pair_of(h, fan_tiles) >= 7;
         }
 
         constexpr res_t fan_tile_1t(const hand& h) {
@@ -483,23 +489,6 @@ namespace qingque {
             });
         }
 
-        res_v reflected_hand(const hand& h) {
-            for (tile_t ti : tile_set::honour_tiles)
-            if (h.counter().count(ti)) return std::vector<uint8_t>(h.decompose().size(), 0u);
-            uint8_t min_num = 10u, max_num = 0u;
-            for (tile_t ti : tile_set::numbered_tiles)
-            if (h.counter().count(ti)) {
-                min_num = std::min(min_num, tile(ti).num());
-                max_num = std::max(max_num, tile(ti).num());
-            }
-            const uint8_t ref = min_num + max_num;
-            return utils::for_all_decompositions<res_t>(h, [ref](const hand::decomposition& d, const hand& hand) {
-                for (const hand::decomposition& d2 : hand.decompose())
-                    if (utils::is_reflection(d, d2, ref)) return true;
-                return false;
-            });
-        }
-
         res_v common_number(const hand& h) {
             for (tile_t ti : tile_set::honour_tiles)
             if (h.counter().count(ti)) return std::vector<uint8_t>(h.decompose().size(), 0u);
@@ -613,24 +602,6 @@ namespace qingque {
                             if (!(visited & ((1 << i) + (1 << j)))) visited |= (1 << i) | (1 << j);
                         }
                 return count >= 1u;
-            });
-        }
-
-        res_v mirrored_hand(const hand& h) {
-            return utils::for_all_decompositions<res_t>(h, [](const hand::decomposition& d, const hand& hand) {
-                uint8_t suit_distribution = 0u;
-                for (const meld& m : d.melds())
-                    suit_distribution |= (1 << (m.tile().suit() >> 5));
-                if (utils::popcount(suit_distribution) != 2u) return false;
-                uint8_t count = 0u;
-                uint8_t visited = 0u;
-                for (uint8_t i = 0; i < d.melds().size(); ++i)
-                    for (uint8_t j = i + 1; j < d.melds().size(); ++j)
-                        if (utils::is_mixed_double_sequence(d.melds()[i], d.melds()[j]) || utils::is_mixed_double_triplet(d.melds()[i], d.melds()[j])) {
-                            count += !(visited & ((1 << i) + (1 << j)));
-                            if (!(visited & ((1 << i) + (1 << j)))) visited |= (1 << i) | (1 << j);
-                        }
-                return count == 2u;
             });
         }
 
@@ -787,6 +758,11 @@ namespace qingque {
             return utils::contains_pair_of(h, tile_set::dragon_tiles);
         }
 
+        constexpr res_t six_dragon_pairs(const hand& h) {
+            if (!is_seven_pairs(h)) return false;
+            return utils::count_pair_of(h, tile_set::dragon_tiles) == 6u;
+        }
+
         constexpr res_t seven_shifted_pairs(const hand& h) {
             if (!is_seven_pairs(h)) return false;
             for (tile_t ti : {1_m, 2_m, 3_m, 1_p, 2_p, 3_p, 1_s, 2_s, 3_s})
@@ -822,6 +798,8 @@ namespace qingque {
             for (uint8_t i = 1; i <= 8; ++i)
                 for (uint8_t j = i + 1; j <= 9; ++j)
                     if (utils::contains_pair_of(h, {m(i), p(i), s(i), m(j), p(j), s(j)})) return true;
+            for (uint8_t i = 1; i <= 9; ++i)
+                if (utils::count_pair_of(h, {m(i), p(i), s(i)}) == 6u) return true;
             return false;
         }
 
@@ -837,6 +815,15 @@ namespace qingque {
                         if (utils::contains_pair_of(h, {s(i), s(j), s(k), p(i), p(j), p(k)})) return true;
                         if (utils::contains_pair_of(h, {m(i), m(j), m(k), s(i), s(j), s(k)})) return true;
                     }
+            for (uint8_t i = 1; i <= 8; ++i)
+                for (uint8_t j = i + 1; j <= 9; ++j) {
+                    if (utils::contains_pair_of(h, {m(i), p(i)}) && utils::count_pair_of(h, {m(j), p(j)}) == 4u) return true;
+                    if (utils::contains_pair_of(h, {s(i), p(i)}) && utils::count_pair_of(h, {s(j), p(j)}) == 4u) return true;
+                    if (utils::contains_pair_of(h, {m(i), s(i)}) && utils::count_pair_of(h, {m(j), s(j)}) == 4u) return true;
+                    if (utils::contains_pair_of(h, {m(j), p(j)}) && utils::count_pair_of(h, {m(i), p(i)}) == 4u) return true;
+                    if (utils::contains_pair_of(h, {s(j), p(j)}) && utils::count_pair_of(h, {s(i), p(i)}) == 4u) return true;
+                    if (utils::contains_pair_of(h, {m(j), s(j)}) && utils::count_pair_of(h, {m(i), s(i)}) == 4u) return true;
+                }
             return false;
         }
 
@@ -848,8 +835,63 @@ namespace qingque {
             return is_honours_and_knitted_tiles(h);
         }
 
+        constexpr res_t eight_hog(const hand& h) {
+            uint8_t count = 0u;
+            for (tile_t ti : tile_set::all_tiles)
+                if (h.counter().count(ti) == 4) ++count;
+            for (const auto& m : h.melds())
+                if (m.type() == meld_type::kong) --count;
+            return count >= 2u;
+        }
+
+        constexpr res_t twelve_hog(const hand& h) {
+            uint8_t count = 0u;
+            for (tile_t ti : tile_set::all_tiles)
+                if (h.counter().count(ti) == 4) ++count;
+            for (const auto& m : h.melds())
+                if (m.type() == meld_type::kong) --count;
+            return count == 3u;
+        }
+
         constexpr res_t disabled(const hand&) {
             return false;
+        }
+
+        res_v reflected_hand(const hand& h) {
+            if (h.decompose().size() == 0 && is_seven_pairs(h)) return {reflected_pairs(h)};
+            for (tile_t ti : tile_set::honour_tiles)
+                if (h.counter().count(ti)) return std::vector<uint8_t>(h.decompose().size(), 0u);
+            uint8_t min_num = 10u, max_num = 0u;
+            for (tile_t ti : tile_set::numbered_tiles)
+                if (h.counter().count(ti)) {
+                    min_num = std::min(min_num, tile(ti).num());
+                    max_num = std::max(max_num, tile(ti).num());
+                }
+            const uint8_t ref = min_num + max_num;
+            return utils::for_all_decompositions<res_t>(h, [ref](const hand::decomposition& d, const hand& hand) {
+                for (const hand::decomposition& d2 : hand.decompose())
+                    if (utils::is_reflection(d, d2, ref)) return true;
+                return false;
+            });
+        }
+
+        res_v mirrored_hand(const hand& h) {
+            if (h.decompose().size() == 0 && is_seven_pairs(h)) return {three_mirrored_pairs(h)};
+            return utils::for_all_decompositions<res_t>(h, [](const hand::decomposition& d, const hand& hand) {
+                uint8_t suit_distribution = 0u;
+                for (const meld& m : d.melds())
+                    suit_distribution |= (1 << (m.tile().suit() >> 5));
+                if (utils::popcount(suit_distribution) != 2u) return false;
+                uint8_t count = 0u;
+                uint8_t visited = 0u;
+                for (uint8_t i = 0; i < d.melds().size(); ++i)
+                    for (uint8_t j = i + 1; j < d.melds().size(); ++j)
+                        if (utils::is_mixed_double_sequence(d.melds()[i], d.melds()[j]) || utils::is_mixed_double_triplet(d.melds()[i], d.melds()[j])) {
+                            count += !(visited & ((1 << i) + (1 << j)));
+                            if (!(visited & ((1 << i) + (1 << j)))) visited |= (1 << i) | (1 << j);
+                        }
+                return count == 2u;
+            });
         }
 
     }
@@ -861,6 +903,7 @@ namespace qingque {
         fan("海底捞月", {1, 0, 1, 20, 3}, criteria::last_tile_draw),
         fan("河底捞鱼", {1, 0, 1, 20, 3}, criteria::last_tile_claim),
         fan("抢杠和", {1, 0, 1, 20, 3}, criteria::robbing_the_kong),
+        fan("七对", {1, 1, 0, 20, 0}, criteria::seven_pairs),
         fan("门前清", {18u}, criteria::concealed_hand),
         fan("四暗杠", {23u}, criteria::four_concealed_kongs),
         fan("三暗杠", {20u}, criteria::three_concealed_kongs),
@@ -869,47 +912,52 @@ namespace qingque {
         fan("四杠", {22u}, criteria::four_kongs),
         fan("三杠", {20u}, criteria::three_kongs),
         fan("双杠", {15u}, criteria::two_kongs),
-        // fan("杠", {}, criteria::kong),
         fan("四暗刻", {21u}, criteria::four_concealed_triplets),
         fan("三暗刻", {20u}, criteria::three_concealed_triplets),
-        // fan("双暗刻", {}, criteria::two_concealed_triplets),
-        // fan("暗刻", {}, criteria::disabled), // disabled
         fan("对对和", {19u}, criteria::all_triplets),
-        fan("字一色", {22u}, criteria::all_honours),
+        fan("十二归", {1, 0, 0, 20, 0}, criteria::twelve_hog),
+        fan("八归", {1, 0, 0, 16, 0}, criteria::eight_hog),
+        fan("字一色", {1, 0, 0, 22, 0}, criteria::all_honours),
         fan("大四喜", {22u}, criteria::big_four_winds),
         fan("小四喜", {21u}, criteria::little_four_winds),
+        fan("四喜对", {1, 1, 0, 21, 0}, criteria::four_wind_pairs),
         fan("大三元", {21u}, criteria::big_three_dragons),
         fan("小三元", {21u}, criteria::little_three_dragons),
+        fan("三元六对", {1, 1, 0, 21, 0}, criteria::six_dragon_pairs),
+        fan("三元对", {1, 1, 0, 20, 0}, criteria::three_dragon_pairs),
         fan("番牌刻", {15u}, criteria::fan_tile_1t),
         fan("番牌二刻", {16u}, criteria::fan_tile_2t),
         fan("番牌三刻", {18u}, criteria::fan_tile_3t),
         fan("番牌四刻", {21u}, criteria::fan_tile_4t),
-        fan("番牌对", {14u}, criteria::fan_tile_1p),
-        fan("清幺九", {22u}, criteria::all_terminals),
-        fan("混幺九", {20u}, criteria::all_terminals_and_honours),
+        fan("番牌对", {1, 0, 0, 14, 0}, criteria::fan_tile_1p),
+        fan("番牌二对", {1, 1, 0, 15, 0}, criteria::fan_tile_2p),
+        fan("番牌三对", {1, 1, 0, 17, 0}, criteria::fan_tile_3p),
+        fan("番牌四对", {1, 1, 0, 19, 0}, criteria::fan_tile_4p),
+        fan("番牌五对", {1, 1, 0, 20, 0}, criteria::fan_tile_5p),
+        fan("番牌六对", {1, 1, 0, 21, 0}, criteria::fan_tile_6p),
+        fan("番牌七对", {1, 1, 0, 22, 0}, criteria::fan_tile_7p),
+        fan("清幺九", {1, 0, 0, 22, 0}, criteria::all_terminals),
+        fan("混幺九", {1, 0, 0, 20, 0}, criteria::all_terminals_and_honours),
         fan("清带幺", {20u}, criteria::pure_outside_hand),
         fan("混带幺", {20u}, criteria::mixed_outside_hand),
         fan("九莲宝灯", {23u}, criteria::nine_gates),
-        fan("清一色", {21u}, criteria::full_flush),
-        fan("混一色", {20u}, criteria::half_flush),
+        fan("清一色", {1, 0, 0, 21, 0}, criteria::full_flush),
+        fan("混一色", {1, 0, 0, 20, 0}, criteria::half_flush),
         fan("五门齐", {20u}, criteria::all_types),
-        fan("二数", {20u}, criteria::two_numbers),
-        fan("三聚", {20u}, criteria::three_consecutive_numbers),
-        fan("四聚", {20u}, criteria::four_consecutive_numbers),
+        fan("二数", {1, 0, 0, 20, 0}, criteria::two_numbers),
+        fan("三聚", {1, 0, 0, 20, 0}, criteria::three_consecutive_numbers),
+        fan("四聚", {1, 0, 0, 20, 0}, criteria::four_consecutive_numbers),
         fan("九数贯通", {20u}, criteria::nine_numbers),
         fan("满庭芳", {20u}, criteria::common_number),
-        fan("镜数", {20u}, criteria::reflected_hand),
+        fan("镜数", {1, 0, 0, 20, 0}, criteria::reflected_hand),
         fan("四同顺", {23u}, criteria::quadruple_sequence),
         fan("三同顺", {21u}, criteria::triple_sequence),
         fan("二般高", {20u}, criteria::two_double_sequences),
         fan("一般高", {18u}, criteria::double_sequence),
         fan("三色同刻", {20u}, criteria::mixed_triple_triplet),
-        fan("二同刻", {}, criteria::disabled), // disabled
-        fan("双同刻", {}, criteria::disabled), // disabled
         fan("三色同顺", {20u}, criteria::mixed_triple_sequence),
-        fan("二相逢", {}, criteria::disabled), // disabled
-        fan("喜相逢", {}, criteria::disabled), // disabled
-        fan("镜同", {20u}, criteria::mirrored_hand),
+        fan("三色二对", {20u}, criteria::two_triple_pairs),
+        fan("镜同", {1, 0, 0, 20, 0}, criteria::mirrored_hand),
         fan("四连刻", {21u}, criteria::four_shifted_triplets),
         fan("三连刻", {20u}, criteria::three_shifted_triplets),
         fan("四步高", {21u}, criteria::four_shifted_sequences),
@@ -918,7 +966,6 @@ namespace qingque {
         fan("三连环", {19u}, criteria::three_chained_sequences),
         fan("一气贯通", {21u}, criteria::pure_straight),
         fan("双龙会", {20u}, criteria::two_short_straights),
-        fan("连六", {}, criteria::disabled), // disabled
         fan("三色连刻", {17u}, criteria::mixed_shifted_triplets),
         fan("三色贯通", {19u}, criteria::mixed_straight)
     };
@@ -930,6 +977,7 @@ namespace qingque {
         last_tile_draw,
         last_tile_claim,
         robbing_the_kong,
+        seven_pairs,
         concealed_hand,
         four_concealed_kongs,
         three_concealed_kongs,
@@ -938,22 +986,30 @@ namespace qingque {
         four_kongs,
         three_kongs,
         two_kongs,
-        // kong,
         four_concealed_triplets,
         three_concealed_triplets,
-        // two_concealed_triplets,
-        // concealed_triplet,
         all_triplets,
+        twelve_hog,
+        eight_hog,
         all_honours,
         big_four_winds,
         little_four_winds,
+        four_wind_pairs,
         big_three_dragons,
         little_three_dragons,
+        six_dragon_pairs,
+        three_dragon_pairs,
         fan_tile_1t,
         fan_tile_2t,
         fan_tile_3t,
         fan_tile_4t,
         fan_tile_1p,
+        fan_tile_2p,
+        fan_tile_3p,
+        fan_tile_4p,
+        fan_tile_5p,
+        fan_tile_6p,
+        fan_tile_7p,
         all_terminals,
         all_terminals_and_honours,
         pure_outside_hand,
@@ -973,11 +1029,8 @@ namespace qingque {
         two_double_sequences,
         double_sequence,
         mixed_triple_triplet,
-        two_mixed_double_triplets,
-        mixed_double_triplet,
         mixed_triple_sequence,
-        two_mixed_double_sequences,
-        mixed_double_sequence,
+        two_triple_pairs,
         mirrored_hand,
         four_shifted_triplets,
         three_shifted_triplets,
@@ -987,7 +1040,6 @@ namespace qingque {
         three_chained_sequences,
         pure_straight,
         two_short_straights,
-        short_straight,
         mixed_shifted_triplets,
         mixed_straight
     };
@@ -1006,13 +1058,13 @@ namespace qingque {
             }
             results.push_back(res);
         }
-        // if (is_seven_pairs(h) || is_thirteen_orphans(h) || is_honours_and_knitted_tiles(h)) {
-        //     std::bitset<code_size> res;
-        //     for (int j = 0; j < fan_results.size(); ++j)
-        //         if (fans[j].tag.is_special && (!ignore_occ || !fans[j].tag.is_occasional)) 
-        //             res[j] = fan_results[j][0];
-        //     results.push_back(res);
-        // }
+        if (is_seven_pairs(h)) {
+            std::bitset<code_size> res;
+            for (int j = 0; j < fan_results.size(); ++j)
+                if (fans[j].tag.is_special && (!ignore_occ || !fans[j].tag.is_occasional)) 
+                    res[j] = fan_results[j][0];
+            results.push_back(res);
+        }
         return results;
     }
 
@@ -1031,7 +1083,7 @@ namespace qingque {
     }
 
     uint64_t get_weight(const w_data& data, const std::bitset<code_size>& res) {
-        uint64_t weight = 0.0;
+        uint64_t weight = 0;
         for (const auto& [key, w] : data.weights)
             if ((res & key) == res) weight += w;
         return weight;
@@ -1137,12 +1189,21 @@ namespace qingque {
         new_res[three_shifted_triplets] = new_res[three_shifted_triplets] && !res[four_shifted_triplets];
         new_res[three_shifted_sequences] = new_res[three_shifted_sequences] && !res[four_shifted_sequences];
         new_res[three_chained_sequences] = new_res[three_chained_sequences] && !res[four_chained_sequences];
-        new_res[short_straight] = new_res[short_straight] && (!res[two_short_straights] && !res[pure_straight] && !res[four_shifted_sequences]);
+        // new_res[short_straight] = new_res[short_straight] && (!res[two_short_straights] && !res[pure_straight] && !res[four_shifted_sequences]);
         // new_res[two_short_straights] = new_res[two_short_straights] && !res[pure_straight];
-        new_res[mixed_double_triplet] = 0;
-        new_res[mixed_double_sequence] = 0;
-        new_res[two_mixed_double_triplets] = 0;
-        new_res[two_mixed_double_sequences] = 0;
+        // new_res[mixed_double_triplet] = 0;
+        // new_res[mixed_double_sequence] = 0;
+        // new_res[two_mixed_double_triplets] = 0;
+        // new_res[two_mixed_double_sequences] = 0;
+        new_res[fan_tile_1p] = new_res[fan_tile_1p] && !res[fan_tile_2p];
+        new_res[fan_tile_2p] = new_res[fan_tile_2p] && !res[fan_tile_3p];
+        new_res[fan_tile_3p] = new_res[fan_tile_3p] && !res[fan_tile_4p];
+        new_res[fan_tile_4p] = new_res[fan_tile_4p] && !res[fan_tile_5p];
+        new_res[fan_tile_5p] = new_res[fan_tile_5p] && !res[fan_tile_6p];
+        new_res[fan_tile_6p] = new_res[fan_tile_6p] && !res[fan_tile_7p];
+        new_res[fan_tile_1p] = new_res[fan_tile_1p] && !res[four_wind_pairs];
+        new_res[fan_tile_3p] = new_res[fan_tile_3p] && !res[three_dragon_pairs];
+        new_res[fan_tile_6p] = new_res[fan_tile_6p] && !res[six_dragon_pairs];
         return new_res;
     }
 

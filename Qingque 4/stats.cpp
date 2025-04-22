@@ -35,7 +35,7 @@ int main() {
     for (const auto& [code, weight] : wd.weights) {
         auto s = get_readable_code(code, max_count);
         if (s.empty()) continue;
-        file << s << ',' << qingque::get_fan(wd, qingque::derepellenise(code)) << '\n';
+        file << s << ',' << qingque::get_fan(wd, qingque::derepellenise(code)) << ',' << qingque::get_weight(wd, qingque::derepellenise(code)) << '\n';
     }
     file.close();
     return 0;

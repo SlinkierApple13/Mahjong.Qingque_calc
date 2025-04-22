@@ -173,19 +173,12 @@ struct my_task {
 };
 
 uint64_t hand_weight(const hand& h, uint64_t wtile_size) {
-    // const double not_self_drawn_mult = 3.0;
-    // const double melded_triplet_mult = 3.0;
-    // const double melded_sequence_mult = 1.0;
-    // const double kong_mult = 4.0 * 3.0 / 12.0;
-    // const double concealed_kong_mult = 4.0 / 12.0;
     auto closed_counter = h.counter(false);
     uint64_t weight = wtile_size * 1620;
     if (!h.winning_type()(win_type::self_drawn)) weight *= 3;
     auto open_counter = h.counter();
     for (auto m : h.melds()) {
         if (m.type() == meld_type::triplet) weight *= 3;
-        // if (m.type() == meld_type::sequence) weight *= melded_sequence_mult;
-        // if (m.type() == meld_type::kong && !m.concealed()) weight *= kong_mult;
         if (m.type() == meld_type::kong && m.concealed()) weight /= 3;
     }
     auto decompose_size = h.decompose().size(); // + (bool)qingque::is_seven_pairs(h);
@@ -319,7 +312,7 @@ void src_gen(my_queue<std::array<uint32_t, 4>>& q, my_queue<std::array<uint32_t,
 }
 
 void process_task(const my_task& t, my_map& m) {
-    double weight = t.weight;
+    uint64_t weight = t.weight;
     m.add_data(t.h, weight);
 }
 
