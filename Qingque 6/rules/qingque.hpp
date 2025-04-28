@@ -902,7 +902,7 @@ namespace qingque {
         fan("岭上开花", {0, 0, 1, 20, 3}, criteria::out_with_replacement_tile),
         fan("海底捞月", {1, 0, 1, 20, 3}, criteria::last_tile_draw),
         fan("河底捞鱼", {1, 0, 1, 20, 3}, criteria::last_tile_claim),
-        fan("抢杠", {1, 0, 1, 20, 3}, criteria::robbing_the_kong),
+        fan("抢杠和", {1, 0, 1, 20, 3}, criteria::robbing_the_kong),
         fan("七对", {1, 1, 0, 20, 0}, criteria::seven_pairs),
         fan("门前清", {20u}, criteria::concealed_hand),
         fan("四暗杠", {23u}, criteria::four_concealed_kongs),
