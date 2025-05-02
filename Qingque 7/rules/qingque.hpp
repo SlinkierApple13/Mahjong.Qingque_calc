@@ -896,8 +896,8 @@ namespace qingque {
     }
 
     const std::vector<fan> fans = {
-        fan("天和", {1, 0, 1, 20, 18}, criteria::heavenly_hand),
-        fan("地和", {1, 0, 1, 20, 18}, criteria::earthly_hand),
+        fan("天和", {1, 0, 1, 20, 15}, criteria::heavenly_hand),
+        fan("地和", {1, 0, 1, 20, 15}, criteria::earthly_hand),
         fan("岭上开花", {0, 0, 1, 20, 3}, criteria::out_with_replacement_tile),
         fan("海底捞月", {1, 0, 1, 20, 3}, criteria::last_tile_draw),
         fan("河底捞鱼", {1, 0, 1, 20, 3}, criteria::last_tile_claim),
@@ -942,7 +942,7 @@ namespace qingque {
         fan("九莲宝灯", {23u}, criteria::nine_gates),
         fan("清一色", {1, 0, 0, 21, 0}, criteria::full_flush),
         fan("混一色", {1, 0, 0, 20, 0}, criteria::half_flush),
-        fan("五门齐", {20u}, criteria::all_types),
+        fan("五门齐", {19u}, criteria::all_types),
         fan("二数", {1, 0, 0, 20, 0}, criteria::two_numbers),
         fan("三聚", {1, 0, 0, 20, 0}, criteria::three_consecutive_numbers),
         fan("四聚", {1, 0, 0, 20, 0}, criteria::four_consecutive_numbers),
@@ -1144,7 +1144,7 @@ namespace qingque {
     std::bitset<code_size> derepellenise(const std::bitset<code_size>& res) {
         std::bitset<code_size> new_res = res;
         using enum indices;
-        new_res[concealed_hand] = new_res[concealed_hand] && (!res[heavenly_hand] && !res[earthly_hand] && !res[four_concealed_triplets] && !res[nine_gates]);
+        new_res[concealed_hand] = new_res[concealed_hand] && (!res[four_concealed_triplets] && !res[nine_gates]);
         new_res[all_triplets] = new_res[all_triplets] && (!res[four_kongs] && !res[four_concealed_triplets] && !res[big_four_winds] && !res[four_shifted_triplets]);
         // new_res[concealed_triplet] = new_res[concealed_triplet] && (!res[four_concealed_triplets] && !res[three_concealed_triplets] && !res[two_concealed_triplets]);
         // new_res[two_concealed_triplets] = new_res[two_concealed_triplets] && (!res[four_concealed_triplets] && !res[three_concealed_triplets]);

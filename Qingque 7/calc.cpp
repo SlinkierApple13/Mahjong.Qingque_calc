@@ -87,7 +87,7 @@ int main() {
     setlocale(LC_ALL, "zh_CN.UTF-8");
 #endif
     wd = qingque_wd::get_wd();
-    std::cout << "[青雀 第 6 版 计算器]\n\n";
+    std::cout << "[青雀 第 7 版 计算器]\n\n";
     std::cout << "牌张：123456789m/p/s, ESWNCFP\n";
     std::cout << "门风:  ! - 東,    @ - 南,    # - 西,    $ - 北\n";
     std::cout << "和牌:  % - 自摸,  ^ - 岭上开花/抢杠,  & - 海底捞月/河底捞鱼,  * - 天和/地和\n";
