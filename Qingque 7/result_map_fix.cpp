@@ -43,12 +43,12 @@ struct my_map {
 
 };
 
-my_map wd;
+my_map wd, wd1;
 
 void get_wd() {
     std::ifstream file("result_map_temp.dat", std::ios::in | std::ios::binary);
     if (!file.is_open()) {
-        std::cerr << "无法打开文件 result_map.dat.\n";
+        std::cerr << "无法打开文件 result_map_temp.dat.\n";
         std::exit(1);
     }
     uint64_t total_weight;
@@ -64,43 +64,15 @@ void get_wd() {
     file.close();
 }
 
-uint64_t hand_weight(const hand& h, uint64_t wtile_size) {
-    auto closed_counter = h.counter(false);
-    uint64_t weight = wtile_size * 1620;
-    if (!h.winning_type()(win_type::self_drawn)) weight *= 3;
-    auto open_counter = h.counter();
-    for (auto m : h.melds()) {
-        if (m.type() == meld_type::triplet) weight *= 3;
-        if (m.type() == meld_type::kong && m.concealed()) weight /= 3;
-    }
-    auto decompose_size = h.decompose().size() + (bool)qingque::is_seven_pairs(h);
-    if (decompose_size == 0) return 0;
-    // if (decompose_size > 1) weight /= decompose_size;
-    for (auto ti : tile_set::all_tiles) {
-        if (open_counter.count(ti) == 1) weight *= 4;
-        if (open_counter.count(ti) == 2) weight *= 6;
-        if (open_counter.count(ti) == 3) weight *= 4;
-    }
-    return weight;
-}
-
-void fix_hand(const hand& h) {
-    auto weight = hand_weight(h, 14);
-    wd.add_data(h, weight);
-}
-
 void fix() {
-    auto m = mahjong::tile_literals::operator""_m;
-    auto p = mahjong::tile_literals::operator""_p;
-    auto s = mahjong::tile_literals::operator""_s;
-    for (int i = 1; i <= 9; ++i)
-    for (int j = i; j <= 9; ++j)
-    for (tile_t k : mahjong::tile_set::all_tiles) {
-        auto h = hand(std::vector<tile_t>{m(i), m(i), m(j), m(j), p(i), p(i), p(j), p(j), s(i), s(i), s(j), s(j), k}, {}, k, 0);
-        if (!h.is_valid()) continue;
-        auto h1 = hand(std::vector<tile_t>{m(i), m(i), m(j), m(j), p(i), p(i), p(j), p(j), s(i), s(i), s(j), s(j), k}, {}, k, win_type::self_drawn);
-        fix_hand(h);
-        fix_hand(h1);
+    using enum qingque::indices;
+    wd1.m_data.total_weight = wd.m_data.total_weight;
+    for (const auto& [code, weight] : wd.m_data.weights) {
+        auto code1 = code;    
+        if (code[fan_tile_2p]) code1[fan_tile_1p] = true;
+        if (wd1.m_data.weights.find(code1) == wd1.m_data.weights.end())
+            wd1.m_data.weights[code1] = weight;
+        else wd1.m_data.weights[code1] += weight;
     }
 }
 
@@ -110,8 +82,8 @@ void write() {
         std::cerr << "无法打开或创建文件 result_map.dat.\n";
         std::exit(1);
     }
-    file.write(reinterpret_cast<const char*>(&wd.m_data.total_weight), sizeof wd.m_data.total_weight);
-    for (const auto& [code, weight] : wd.m_data.weights) {
+    file.write(reinterpret_cast<const char*>(&wd1.m_data.total_weight), sizeof wd1.m_data.total_weight);
+    for (const auto& [code, weight] : wd1.m_data.weights) {
         file.write(reinterpret_cast<const char*>(&code), sizeof code);
         file.write(reinterpret_cast<const char*>(&weight), sizeof weight);
     }

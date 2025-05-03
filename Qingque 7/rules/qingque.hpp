@@ -304,7 +304,7 @@ namespace qingque {
             const std::array<tile_t, 4> fan_tiles = {h.winning_type().seat_wind(), honours::C, honours::F, honours::P};
             uint8_t cnt = 0;
             for (tile_t ti : fan_tiles)
-                cnt += (h.counter().count(ti) == 2);
+                cnt += (h.counter(false).count(ti) == 2 || h.counter(false).count(ti) == 4);
             return cnt >= 1;
         }
 
@@ -1145,7 +1145,7 @@ namespace qingque {
         std::bitset<code_size> new_res = res;
         using enum indices;
         new_res[concealed_hand] = new_res[concealed_hand] && (!res[four_concealed_triplets] && !res[nine_gates]);
-        new_res[all_triplets] = new_res[all_triplets] && (!res[four_kongs] && !res[four_concealed_triplets] && !res[big_four_winds] && !res[four_shifted_triplets]);
+        new_res[all_triplets] = new_res[all_triplets] && (!res[four_kongs] && !res[four_concealed_triplets] && !res[big_four_winds] && !res[four_shifted_triplets] && !res[fan_tile_4t]);
         // new_res[concealed_triplet] = new_res[concealed_triplet] && (!res[four_concealed_triplets] && !res[three_concealed_triplets] && !res[two_concealed_triplets]);
         // new_res[two_concealed_triplets] = new_res[two_concealed_triplets] && (!res[four_concealed_triplets] && !res[three_concealed_triplets]);
         new_res[three_concealed_triplets] = new_res[three_concealed_triplets] && !res[four_concealed_triplets] && !res[three_concealed_kongs];
