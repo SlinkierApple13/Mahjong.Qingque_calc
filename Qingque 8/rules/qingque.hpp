@@ -523,7 +523,7 @@ namespace qingque {
                 for (uint8_t i = 0; i < d.melds().size(); ++i)
                     for (uint8_t j = i + 1; j < d.melds().size(); ++j)
                         if (utils::is_equivalent(d.melds()[i], d.melds()[j])) ++count;
-                return (count >= 2u);
+                return (count == 2u || count > 3u);
             });
         }
 
@@ -911,23 +911,23 @@ namespace qingque {
         fan("四杠", {22u}, criteria::four_kongs),
         fan("三杠", {20u}, criteria::three_kongs),
         fan("双杠", {15u}, criteria::two_kongs),
-        fan("四暗刻", {21u}, criteria::four_concealed_triplets),
+        fan("四暗刻", {22u}, criteria::four_concealed_triplets),
         fan("三暗刻", {20u}, criteria::three_concealed_triplets),
         fan("对对和", {19u}, criteria::all_triplets),
         fan("十二归", {1, 0, 0, 21, 0}, criteria::twelve_hog),
         fan("八归", {1, 0, 0, 16, 0}, criteria::eight_hog),
         fan("字一色", {1, 0, 0, 22, 0}, criteria::all_honours),
         fan("大四喜", {22u}, criteria::big_four_winds),
-        fan("小四喜", {21u}, criteria::little_four_winds),
+        fan("小四喜", {22u}, criteria::little_four_winds),
         fan("四喜对", {1, 1, 0, 21, 0}, criteria::four_wind_pairs),
-        fan("大三元", {21u}, criteria::big_three_dragons),
+        fan("大三元", {22u}, criteria::big_three_dragons),
         fan("小三元", {21u}, criteria::little_three_dragons),
-        fan("三元六对", {1, 1, 0, 21, 0}, criteria::six_dragon_pairs),
+        fan("三元六对", {1, 1, 0, 22, 0}, criteria::six_dragon_pairs),
         fan("三元对", {1, 1, 0, 20, 0}, criteria::three_dragon_pairs),
         fan("番牌刻", {15u}, criteria::fan_tile_1t),
         fan("番牌二刻", {16u}, criteria::fan_tile_2t),
         fan("番牌三刻", {18u}, criteria::fan_tile_3t),
-        fan("番牌四刻", {21u}, criteria::fan_tile_4t),
+        fan("番牌四刻", {22u}, criteria::fan_tile_4t),
         fan("番牌对", {1, 0, 0, 14, 0}, criteria::fan_tile_1p),
         fan("番牌二对", {1, 1, 0, 15, 0}, criteria::fan_tile_2p),
         fan("番牌三对", {1, 1, 0, 17, 0}, criteria::fan_tile_3p),
@@ -957,7 +957,7 @@ namespace qingque {
         fan("三色同顺", {20u}, criteria::mixed_triple_sequence),
         fan("三色二对", {1, 1, 0, 20, 0}, criteria::two_triple_pairs),
         fan("镜同", {1, 0, 0, 20, 0}, criteria::mirrored_hand),
-        fan("四连刻", {21u}, criteria::four_shifted_triplets),
+        fan("四连刻", {22u}, criteria::four_shifted_triplets),
         fan("三连刻", {20u}, criteria::three_shifted_triplets),
         fan("四步高", {21u}, criteria::four_shifted_sequences),
         fan("三步高", {20u}, criteria::three_shifted_sequences),
@@ -965,7 +965,7 @@ namespace qingque {
         fan("三连环", {19u}, criteria::three_chained_sequences),
         fan("一气贯通", {21u}, criteria::pure_straight),
         fan("双龙会", {20u}, criteria::two_short_straights),
-        fan("三色连刻", {17u}, criteria::mixed_shifted_triplets),
+        fan("三色连刻", {16u}, criteria::mixed_shifted_triplets),
         fan("三色贯通", {19u}, criteria::mixed_straight)
     };
 
