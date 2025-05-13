@@ -896,8 +896,8 @@ namespace qingque {
     }
 
     const std::vector<fan> fans = {
-        fan("天和", {1, 0, 1, 20, 15}, criteria::heavenly_hand),
-        fan("地和", {1, 0, 1, 20, 15}, criteria::earthly_hand),
+        fan("天和", {1, 0, 1, 20, 16}, criteria::heavenly_hand),
+        fan("地和", {1, 0, 1, 20, 16}, criteria::earthly_hand),
         fan("岭上开花", {0, 0, 1, 20, 3}, criteria::out_with_replacement_tile),
         fan("海底捞月", {1, 0, 1, 20, 3}, criteria::last_tile_draw),
         fan("河底捞鱼", {1, 0, 1, 20, 3}, criteria::last_tile_claim),
@@ -940,10 +940,10 @@ namespace qingque {
         fan("清带幺", {20u}, criteria::pure_outside_hand),
         fan("混带幺", {20u}, criteria::mixed_outside_hand),
         fan("九莲宝灯", {23u}, criteria::nine_gates),
-        fan("清一色", {1, 0, 0, 22, 0}, criteria::full_flush),
+        fan("清一色", {1, 0, 0, 21, 0}, criteria::full_flush),
         fan("混一色", {1, 0, 0, 20, 0}, criteria::half_flush),
         fan("五门齐", {19u}, criteria::all_types),
-        fan("二数", {1, 0, 0, 21, 0}, criteria::two_numbers),
+        fan("二数", {1, 0, 0, 22, 0}, criteria::two_numbers),
         fan("三聚", {1, 0, 0, 20, 0}, criteria::three_consecutive_numbers),
         fan("四聚", {1, 0, 0, 20, 0}, criteria::four_consecutive_numbers),
         fan("九数贯通", {20u}, criteria::nine_numbers),

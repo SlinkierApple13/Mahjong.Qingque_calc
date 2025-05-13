@@ -10,8 +10,8 @@ using namespace mahjong::honours;
 qingque::w_data wd;
 
 // namespace qingque_wd {
-//     qingque::w_data wd;
 //     auto get_wd() {
+//     qingque::w_data wd;
 //         std::ifstream file("result_map.dat", std::ios::in | std::ios::binary);
 //         if (!file.is_open()) {
 //             std::cerr << "无法打开文件 result_map.dat.\n";
