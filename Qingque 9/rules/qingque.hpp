@@ -383,6 +383,7 @@ namespace qingque {
         }
 
         res_v pure_outside_hand(const hand& h) {
+            if (all_terminals(h)) return {true};
             auto poh_check = [](const hand::decomposition& d) {
                 if (!d.pair().is_in(tile_set::terminal_tiles)) return false;
                 for (const meld& m : d.melds())
@@ -393,6 +394,7 @@ namespace qingque {
         }
 
         res_v mixed_outside_hand(const hand& h) {
+            if (all_terminals_and_honours(h)) return {true};
             return utils::for_all_decompositions<res_t>(h, [](const hand::decomposition& d) {
                 if (!d.pair().is_in(tile_set::terminal_honour_tiles)) return false;
                 for (const meld& m : d.melds())
@@ -908,7 +910,7 @@ namespace qingque {
         fan("三暗杠", {20u}, criteria::three_concealed_kongs),
         fan("双暗杠", {16u}, criteria::two_concealed_kongs),
         fan("暗杠", {14u}, criteria::concealed_kong),
-        fan("四杠", {22u}, criteria::four_kongs),
+        fan("四杠", {23u}, criteria::four_kongs),
         fan("三杠", {20u}, criteria::three_kongs),
         fan("双杠", {15u}, criteria::two_kongs),
         fan("四暗刻", {22u}, criteria::four_concealed_triplets),
@@ -937,8 +939,8 @@ namespace qingque {
         fan("番牌七对", {1, 1, 0, 22, 0}, criteria::fan_tile_7p),
         fan("清幺九", {1, 0, 0, 23, 0}, criteria::all_terminals),
         fan("混幺九", {1, 0, 0, 20, 0}, criteria::all_terminals_and_honours),
-        fan("清带幺", {20u}, criteria::pure_outside_hand),
-        fan("混带幺", {20u}, criteria::mixed_outside_hand),
+        fan("清带幺", {1, 0, 0, 20, 0}, criteria::pure_outside_hand),
+        fan("混带幺", {1, 0, 0, 20, 0}, criteria::mixed_outside_hand),
         fan("九莲宝灯", {23u}, criteria::nine_gates),
         fan("清一色", {1, 0, 0, 21, 0}, criteria::full_flush),
         fan("混一色", {1, 0, 0, 20, 0}, criteria::half_flush),
