@@ -383,7 +383,9 @@ namespace qingque {
         }
 
         res_v pure_outside_hand(const hand& h) {
-            if (all_terminals(h)) return {true};
+            auto vec_size = std::max<size_t>(1, h.decompose().size());
+            if (all_terminals(h)) return res_v(vec_size, true);
+            if (h.decompose().size() == 0) return {false};
             auto poh_check = [](const hand::decomposition& d) {
                 if (!d.pair().is_in(tile_set::terminal_tiles)) return false;
                 for (const meld& m : d.melds())
@@ -394,7 +396,9 @@ namespace qingque {
         }
 
         res_v mixed_outside_hand(const hand& h) {
-            if (all_terminals_and_honours(h)) return {true};
+            auto vec_size = std::max<size_t>(1, h.decompose().size());
+            if (all_terminals_and_honours(h)) return res_v(vec_size, true);
+            if (h.decompose().size() == 0) return {false};
             return utils::for_all_decompositions<res_t>(h, [](const hand::decomposition& d) {
                 if (!d.pair().is_in(tile_set::terminal_honour_tiles)) return false;
                 for (const meld& m : d.melds())
