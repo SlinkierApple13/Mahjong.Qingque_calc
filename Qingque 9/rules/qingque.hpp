@@ -383,28 +383,22 @@ namespace qingque {
         }
 
         res_v pure_outside_hand(const hand& h) {
-            auto vec_size = std::max<size_t>(1, h.decompose().size());
-            if (all_terminals(h)) return res_v(vec_size, true);
-            if (h.decompose().size() == 0) return {false};
             auto poh_check = [](const hand::decomposition& d) {
                 if (!d.pair().is_in(tile_set::terminal_tiles)) return false;
                 for (const meld& m : d.melds())
                     if (!m.contains(tile_set::terminal_tiles)) return false;
                 return true;
             };
-            return utils::for_all_decompositions<res_t>(h, poh_check);
+            return utils::for_all_decompositions<res_t>(h, poh_check, all_terminals);
         }
 
         res_v mixed_outside_hand(const hand& h) {
-            auto vec_size = std::max<size_t>(1, h.decompose().size());
-            if (all_terminals_and_honours(h)) return res_v(vec_size, true);
-            if (h.decompose().size() == 0) return {false};
             return utils::for_all_decompositions<res_t>(h, [](const hand::decomposition& d) {
                 if (!d.pair().is_in(tile_set::terminal_honour_tiles)) return false;
                 for (const meld& m : d.melds())
                     if (!m.contains(tile_set::terminal_honour_tiles)) return false;
                 return true;
-            });
+            }, all_terminals_and_honours);
         }
 
         constexpr res_t nine_gates(const hand& h) {
@@ -496,7 +490,7 @@ namespace qingque {
 
         res_v common_number(const hand& h) {
             for (tile_t ti : tile_set::honour_tiles)
-            if (h.counter().count(ti)) return std::vector<uint8_t>(h.decompose().size(), 0u);
+            if (h.counter().count(ti)) return {false};
             return utils::for_all_decompositions<res_t>(h, [](const hand::decomposition& d) {
                 num_t num = d.pair().num();
                 for (const meld& m : d.melds())
@@ -863,9 +857,8 @@ namespace qingque {
         }
 
         res_v reflected_hand(const hand& h) {
-            if (h.decompose().size() == 0 && is_seven_pairs(h)) return {reflected_pairs(h)};
             for (tile_t ti : tile_set::honour_tiles)
-                if (h.counter().count(ti)) return std::vector<uint8_t>(h.decompose().size(), 0u);
+                if (h.counter().count(ti)) return {false};
             uint8_t min_num = 10u, max_num = 0u;
             for (tile_t ti : tile_set::numbered_tiles)
                 if (h.counter().count(ti)) {
@@ -877,11 +870,10 @@ namespace qingque {
                 for (const hand::decomposition& d2 : hand.decompose())
                     if (utils::is_reflection(d, d2, ref)) return true;
                 return false;
-            });
+            }, reflected_pairs);
         }
 
         res_v mirrored_hand(const hand& h) {
-            if (h.decompose().size() == 0 && is_seven_pairs(h)) return {three_mirrored_pairs(h)};
             return utils::for_all_decompositions<res_t>(h, [](const hand::decomposition& d, const hand& hand) {
                 uint8_t suit_distribution = 0u;
                 for (const meld& m : d.melds())
@@ -896,7 +888,7 @@ namespace qingque {
                             if (!(visited & ((1 << i) + (1 << j)))) visited |= (1 << i) | (1 << j);
                         }
                 return count == 2u;
-            });
+            }, three_mirrored_pairs);
         }
 
     }
@@ -1059,7 +1051,7 @@ namespace qingque {
             for (int j = 0; j < fan_results.size(); ++j) {
                 if (fans[j].tag.is_special || (ignore_occ && fans[j].tag.is_occasional)) continue;
                 if (fan_results[j].size() == 1) res[j] = fan_results[j][0];
-                else res[j] = fan_results[j][i];   
+                else res[j] = fan_results[j][i + 1];   
             }
             results.push_back(res);
         }

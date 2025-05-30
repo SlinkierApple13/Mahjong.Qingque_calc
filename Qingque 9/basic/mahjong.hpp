@@ -980,17 +980,21 @@ namespace mahjong {
 
     namespace utils {
 
-        template<typename T>
-        std::vector<T> for_all_decompositions(const hand& h, const std::function<T(const hand::decomposition&)>& f) {
+        template<typename T> requires std::is_default_constructible_v<T>
+        std::vector<T> for_all_decompositions(const hand& h, const std::function<T(const hand::decomposition&)>& f, const std::function<T(const hand&)>& g = nullptr) {
             std::vector<T> results;
+            if (g) results.push_back(g(h));
+            else results.push_back(T());
             for (const hand::decomposition& d : h.decompose())
             results.push_back(f(d));
             return results;
         }
 
-        template<typename T>
-        std::vector<T> for_all_decompositions(const hand& h, const std::function<T(const hand::decomposition&, const hand&)>& f) {
+        template<typename T> requires std::is_default_constructible_v<T>
+        std::vector<T> for_all_decompositions(const hand& h, const std::function<T(const hand::decomposition&, const hand&)>& f, const std::function<T(const hand&)>& g = nullptr) {
             std::vector<T> results;
+            if (g) results.push_back(g(h));
+            else results.push_back(T());
             for (const hand::decomposition& d : h.decompose())
             results.push_back(f(d, h));
             return results;
